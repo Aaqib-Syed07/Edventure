@@ -63,6 +63,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             </TabsList>
             <TabsContent value="team">
               <form onSubmit={(e) => { e.preventDefault(); handleSubmit('team'); }} className="space-y-4">
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm">
+                    {error}
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="team-email">Email</Label>
                   <Input
@@ -72,6 +77,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 <div className="space-y-2">
@@ -82,11 +88,15 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
-                <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700">
-                  Login as Team Member
+                <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700" disabled={isLoading}>
+                  {isLoading ? 'Logging in...' : 'Login as Team Member'}
                 </Button>
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  Demo: team@test.com / password123
+                </p>
               </form>
             </TabsContent>
             <TabsContent value="campus_lead">
