@@ -4,20 +4,44 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { api } from '../services/api';
 import logo from 'figma:asset/7478fe69abd5cd9165952273744ef577566140ca.png';
 
 interface LoginPageProps {
-  onLogin: (role: 'team' | 'campus_lead') => void;
+  onLogin: (role: 'team' | 'campus_lead', user: any) => void;
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (role: 'team' | 'campus_lead') => {
-    // Mock authentication - in production, this would validate credentials
-    if (email && password) {
-      onLogin(role);
+  const handleSubmit = async (role: 'team' | 'campus_lead') => {
+    if (!email || !password) {
+      setError('Please enter email and password');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await api.login(email, password);
+      
+      // Check if user role matches the selected tab
+      if (response.user.role !== role) {
+        setError(`This account is registered as ${response.user.role}. Please use the correct login tab.`);
+        api.clearToken();
+        setIsLoading(false);
+        return;
+      }
+      
+      onLogin(role, response.user);
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
