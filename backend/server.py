@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import auth, cohorts, campus_leads, messages, events, profile, stats
 from utils.database import db
+from utils.db_init import initialize_database
 import logging
 
 # Configure logging
@@ -29,6 +30,8 @@ app.add_middleware(
 async def startup_event():
     logger.info("Starting up EdVenture Park Community API...")
     db.connect()
+    # Initialize database tables and data
+    initialize_database()
     logger.info("API is ready!")
 
 # Include routers
