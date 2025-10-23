@@ -2,12 +2,16 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List
 from models.schemas import Cohort, CohortCreate
 from utils.auth import get_current_user
+from utils.database import get_db
 import uuid
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/cohorts", tags=["Cohorts"])
 
-# In-memory storage for development
+# Fallback in-memory storage for development when Supabase is not available
 cohorts_db = {
     "1": {
         "id": "1",
